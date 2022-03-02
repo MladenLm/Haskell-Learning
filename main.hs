@@ -463,14 +463,64 @@ testSet = Union (Sing 1) (Union (Sing 2) EmptySet)
 data PeaNum = Succ PeaNum | Zero
     deriving Show
 
-data Calculation = Add Int Int 
-                 | Sub Int Int 
-                 | Mul Int Int 
+data Calculation = Add Int Int
+                 | Sub Int Int
+                 | Mul Int Int
                  | Div Int Int
                  deriving Show
-                
+
 calc :: Calculation -> Int
 calc (Add x y) = x + y
 calc (Sub x y) = x - y
 calc (Mul x y) = x * y
 calc (Div x y) = x `div` y
+
+compareWithHundred :: Integer -> Ordering
+compareWithHundred = compare 100
+
+divideByTen :: Double -> Double
+divideByTen = (/10)
+
+applyTwice :: (t -> t) -> t -> t
+applyTwice f x = f (f x)
+
+zipWith' :: (a -> b -> c) -> [a] -> [b] -> [c]
+zipWith' _ [] _ = []
+zipWith' _ _ [] = []
+zipWith' f (x:xs) (y:ys) = f x y : zipWith' f xs ys
+
+flip' :: (a -> b -> c) -> b -> a -> c
+flip' f y x = f x y
+
+map' :: (t -> a) -> [t] -> [a]
+map' _ [] = []
+map' f (x:xs) = f x : map' f xs
+
+filter' :: Eq a => (a -> Bool) -> [a] -> [a]
+filter' _ [] = []
+filter' p (x:xs)
+    | p x       = x : filter' p xs
+    | otherwise = filter' p xs
+
+newQuickSort :: Ord a => [a] -> [a]
+newQuickSort [] = []
+newQuickSort (x:xs) =
+    let smallerSort = newQuickSort (filter' (<=x) xs)
+        biggerSort  = newQuickSort (filter' (>x) xs)
+    in  smallerSort ++ [x] ++ biggerSort
+
+largestDivisiable :: Integral a => a -> a
+largestDivisiable y = head (filter p [100000, 99999..])
+    where p x = x `mod` y == 0
+
+sumOfAllOddSquaresToHun :: Integer
+sumOfAllOddSquaresToHun = sum (takeWhile (<5000) (filter even (map (^2) [1..100])))
+
+sumWithFold :: (Num a) => [a] -> a
+sumWithFold = foldl (+) 0
+
+sumWithFold' :: (Num a) => [a] -> a
+sumWithFold' xs = foldl (\acc x -> x + acc) 0 xs
+
+mapWithFold :: (a -> b) -> [a] -> [b]
+mapWithFold f xs = foldr (\x acc -> f x : acc) [] xs 
