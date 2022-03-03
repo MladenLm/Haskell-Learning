@@ -356,7 +356,7 @@ instance Num Q where
     (*)                              = multQ
     abs (Q nominator denominator)    = Q (abs nominator) (abs denominator)
     signum (Q nominator denominator) = Q (signum nominator * signum denominator) 1
-
+    
 
 
 -- Cross between data and type
@@ -584,10 +584,27 @@ data Trie a = Leafy a | Nodey a [Trie a]
 
 data Persons = Persons { name :: String,
                          age  :: Int }
+    deriving Show
 
 greet :: Persons -> [Char]
 greet person = "Hi " ++ name person
 
 data Point = D2 { x :: Int, y :: Int}
            | D3 { x :: Int, y :: Int, z :: Int }
+
+zipping :: [a] -> [b] -> [(a, b)]
+zipping = zipWith makeTuple 
+    where makeTuple a b = (a, b)
+
+data Personss = Personss { namee :: String, 
+                           agee  :: Int }
+
+data Temperature = C Float | F Float
+    deriving Show
+
+instance Eq Temperature where
+    (==) (C n) (C m) = n == m
+    (==) (F n) (F m) = n == m
+    (==) (C c) (F f) = (1.8*c + 32) == f
+    (==) (F f) (C c) = (1.8*c + 32) == f
 
