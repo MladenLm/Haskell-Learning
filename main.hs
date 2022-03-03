@@ -121,6 +121,51 @@ lookAtThis x = x * x
 data List a = Empty | Cons a (List a)
     deriving Show
 
+addOneToAll :: List a -> List a
+addOneToAll Empty = Empty
+addOneToAll (Cons x xs) = Cons x (addOneToAll xs)
+
+mulOneToAll :: [Integer]
+mulOneToAll = map (* 2) []
+
+applyToAll :: (t -> a) -> List t -> List a
+applyToAll _ Empty = Empty
+applyToAll f (Cons x xs) = Cons (f x) (applyToAll f xs)
+
+myMapping :: (t -> a) -> [t] -> [a]
+myMapping _ [] = []
+myMapping f (x:xs) = f x : myMapping f xs
+
+adToAll :: List Integer -> List Integer
+adToAll = applyToAll adOne
+    where adOne y = y + 1
+
+squareAll :: List Integer -> List Integer
+squareAll = applyToAll square
+    where square x = x * x
+
+keepOnlyPositive :: (Ord a, Num a) => List a -> List a
+keepOnlyPositive Empty = Empty
+keepOnlyPositive (Cons x xs)
+    | x > 0     = Cons x (keepOnlyPositive xs)
+    | otherwise = keepOnlyPositive xs
+
+keepOnlyEven :: Integral a => List a -> List a
+keepOnlyEven Empty = Empty
+keepOnlyEven (Cons x xs)
+    | even x    = Cons x (keepOnlyEven xs)
+    | otherwise = keepOnlyEven xs
+
+
+myFilter :: (a -> Bool) -> List a -> List a
+myFilter _ Empty = Empty
+myFilter f (Cons x xs)
+    | f x = Cons x (myFilter f xs)
+    | otherwise   = myFilter f xs
+
+keepOnlyEvenEvolved :: List Integer -> List Integer
+keepOnlyEvenEvolved = myFilter even
+
 tellBmi :: (Ord a, Fractional a) => a -> a -> [Char]
 tellBmi height weight
     | bmi < 18 = "ok"
@@ -451,7 +496,7 @@ data Set a = EmptySet | Sing a | Union (Set a) (Set a)
 foldSet :: b -> (a -> b) -> (b -> b -> b) -> Set a -> b
 foldSet e s u EmptySet    = e
 foldSet e s u (Sing x)    = s x
-foldSet e s u (Union x y) = (foldSet e s u x) `u` (foldSet e s u y)
+foldSet e s u (Union x y) = u (foldSet e s u x) (foldSet e s u y)
 
 
 isIn :: Eq a => a -> Set a -> Bool
@@ -523,4 +568,26 @@ sumWithFold' :: (Num a) => [a] -> a
 sumWithFold' xs = foldl (\acc x -> x + acc) 0 xs
 
 mapWithFold :: (a -> b) -> [a] -> [b]
-mapWithFold f xs = foldr (\x acc -> f x : acc) [] xs 
+mapWithFold f xs = foldr (\x acc -> f x : acc) [] xs
+
+
+revWithFold :: [a] -> [a]
+revWithFold = foldl (\x acc -> acc : x ) []
+
+revWithFold' :: [a] -> [a]
+revWithFold' = foldl (flip (:)) []
+
+prefixes :: [a] -> [[a]]
+prefixes = foldr (\x acc -> [x] : (map (x :) acc)) []
+
+data Trie a = Leafy a | Nodey a [Trie a]
+
+data Persons = Persons { name :: String,
+                         age  :: Int }
+
+greet :: Persons -> [Char]
+greet person = "Hi " ++ name person
+
+data Point = D2 { x :: Int, y :: Int}
+           | D3 { x :: Int, y :: Int, z :: Int }
+
