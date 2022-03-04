@@ -616,6 +616,8 @@ data NonEmptyList a = ConsNE a (NonEmptyList a) | Singelton a
     deriving Show
 
 
+-- take a list and return a list of lists where we skip every second element
+
 takeNth :: Int -> [a] -> [a]
 takeNth _ [] = []
 takeNth n (x:xs) = x : takeNth n (drop n (x:xs))
@@ -626,3 +628,28 @@ skipsHelper n (x:xs) = takeNth n (x:xs) : skipsHelper (n + 1) xs
 
 skips' :: [a] -> [[a]]
 skips' = skipsHelper 1
+
+
+indexFrom1 :: [a] -> [(Int, a)]
+indexFrom1 xs = zip [1..length xs] xs
+
+
+localMaxima' :: Ord a => [a] -> [a]
+localMaxima' [] = []
+localMaxima' [x] = []
+localMaxima' (x:y:xs) 
+    | x > y                = x : localMaxima' xs
+    | y > x && y > head xs = y : localMaxima' xs
+    | otherwise            = localMaxima' xs
+
+greaterThan100 :: [Integer] -> [Integer]
+greaterThan100 = filter (>100) 
+
+bzu :: [Integer] -> Bool
+bzu = even . length . greaterThan100 
+
+curry' :: ((a, b) -> t) -> a -> b -> t
+curry' f x y = f (x, y)
+
+uncurry' :: (a -> b -> c) -> (a, b) -> c
+uncurry' f (x, y) = f x y
