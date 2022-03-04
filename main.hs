@@ -356,7 +356,7 @@ instance Num Q where
     (*)                              = multQ
     abs (Q nominator denominator)    = Q (abs nominator) (abs denominator)
     signum (Q nominator denominator) = Q (signum nominator * signum denominator) 1
-    
+
 
 
 -- Cross between data and type
@@ -593,10 +593,10 @@ data Point = D2 { x :: Int, y :: Int}
            | D3 { x :: Int, y :: Int, z :: Int }
 
 zipping :: [a] -> [b] -> [(a, b)]
-zipping = zipWith makeTuple 
+zipping = zipWith makeTuple
     where makeTuple a b = (a, b)
 
-data Personss = Personss { namee :: String, 
+data Personss = Personss { namee :: String,
                            agee  :: Int }
 
 data Temperature = C Float | F Float
@@ -608,3 +608,21 @@ instance Eq Temperature where
     (==) (C c) (F f) = (1.8*c + 32) == f
     (==) (F f) (C c) = (1.8*c + 32) == f
 
+safeHeads :: [b] -> Either [Char] b
+safeHeads (x:_) = Right x
+safeHeads [] = Left "The list is empty"
+
+data NonEmptyList a = ConsNE a (NonEmptyList a) | Singelton a
+    deriving Show
+
+
+takeNth :: Int -> [a] -> [a]
+takeNth _ [] = []
+takeNth n (x:xs) = x : takeNth n (drop n (x:xs))
+
+skipsHelper :: Int -> [a] -> [[a]]
+skipsHelper _ [] = []
+skipsHelper n (x:xs) = takeNth n (x:xs) : skipsHelper (n + 1) xs
+
+skips' :: [a] -> [[a]]
+skips' = skipsHelper 1
