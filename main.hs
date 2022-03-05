@@ -538,7 +538,7 @@ flip' :: (a -> b -> c) -> b -> a -> c
 flip' f y x = f x y
 
 map' :: (t -> a) -> [t] -> [a]
-map' _ [] = []
+map' _ []     = []
 map' f (x:xs) = f x : map' f xs
 
 filter' :: Eq a => (a -> Bool) -> [a] -> [a]
@@ -610,7 +610,7 @@ instance Eq Temperature where
 
 safeHeads :: [b] -> Either [Char] b
 safeHeads (x:_) = Right x
-safeHeads [] = Left "The list is empty"
+safeHeads []    = Left "The list is empty"
 
 data NonEmptyList a = ConsNE a (NonEmptyList a) | Singelton a
     deriving Show
@@ -653,3 +653,51 @@ curry' f x y = f (x, y)
 
 uncurry' :: (a -> b -> c) -> (a, b) -> c
 uncurry' f (x, y) = f x y
+
+ages :: [Integer]
+ages = [18,19,16]
+
+names :: [[Char]]
+names = ["Mladen", "Aras", "Ryan"]
+
+canDrink :: Integer  -> String -> Bool
+canDrink age name = age > 18 ||  name == "Adithya"
+
+res2 :: [[Bool]]
+res2 = map (\n -> map (\g -> g n) (map canDrink ages)) names
+
+{-
+        Homework
+        numbers :: [Int]
+        names :: [String]
+        tupler :: Int -> String -> (Int, String)
+        result :: [[(Int, String)]]
+
+        numbers = [1,2,3]
+        names = ["Aras", "Ryan"]
+
+        result = 
+            [
+                [ (1, "Aras"), (1, "Ryan")],
+                [ (2, "Aras"), (2, "Ryan")],
+                [ (3, "Aras"), (3, "Ryan")]
+            ]
+        
+        crossProductSpecific :: [Int] -> [String] -> [[(Int, String)]]
+        crossProduct :: (a -> b -> c) -> [a] -> [b] -> [c]
+-}
+
+myFold :: b -> (a -> b -> b) -> [a] -> b
+myFold z f []     = z
+myFold z f (x:xs) = f x (myFold z f xs)
+
+
+sumWithMyFold :: [Integer] -> Integer
+sumWithMyFold = myFold 0 (+)
+
+prodWithMyFold :: [Integer] -> Integer
+prodWithMyFold = myFold 1 (*)
+
+lengthWithMyFold :: [a] -> Integer
+lengthWithMyFold = myFold 0 (\_ x -> x + 1)
+
