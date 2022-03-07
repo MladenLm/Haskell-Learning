@@ -666,26 +666,41 @@ canDrink age name = age > 18 ||  name == "Adithya"
 res2 :: [[Bool]]
 res2 = map (\n -> map (\g -> g n) (map canDrink ages)) names
 
+
+-- Homework
+numbers :: [Int]
+result :: [[(Int, String)]]
+
+numbers = [1,2,3]
+names' :: [[Char]]
+names' = ["Aras", "Ryan"]
+
+result = 
+    [
+        [ (1, "Aras"), (1, "Ryan")],
+        [ (2, "Aras"), (2, "Ryan")],
+        [ (3, "Aras"), (3, "Ryan")]
+    ]
+
+makeTuple :: a -> b -> (a, b)
+makeTuple a b = (a,b)
+
+crossProductSpecific :: [a] -> [b] -> [[(a, b)]]
+crossProductSpecific xs ys = map (\x -> map (makeTuple x) ys) xs
+
 {-
-        Homework
-        numbers :: [Int]
-        names :: [String]
-        tupler :: Int -> String -> (Int, String)
-        result :: [[(Int, String)]]
+Looping through two lists to get matrix
 
-        numbers = [1,2,3]
-        names = ["Aras", "Ryan"]
+xs :: [a]
+ys :: [b]
 
-        result = 
-            [
-                [ (1, "Aras"), (1, "Ryan")],
-                [ (2, "Aras"), (2, "Ryan")],
-                [ (3, "Aras"), (3, "Ryan")]
-            ]
-        
-        crossProductSpecific :: [Int] -> [String] -> [[(Int, String)]]
-        crossProduct :: (a -> b -> c) -> [a] -> [b] -> [c]
+map (\a -> map (b -> f a b) ys) xs
+
 -}
+
+crossProduct :: (t -> a -> b) -> [t] -> [a] -> [[b]]
+crossProduct f xs ys = map (\x -> map (f x) ys) xs
+
 
 myFold :: b -> (a -> b -> b) -> [a] -> b
 myFold z f []     = z
