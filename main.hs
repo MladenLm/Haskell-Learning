@@ -166,7 +166,7 @@ myFilter f (Cons x xs)
 keepOnlyEvenEvolved :: List Integer -> List Integer
 keepOnlyEvenEvolved = myFilter even
 
-tellBmi :: (Ord a, Fractional a) => a -> a -> [Char]
+tellBmi :: (Ord a, Fractional a) => a -> a -> String
 tellBmi height weight
     | bmi < 18 = "ok"
     | bmi < 25 = "skinny"
@@ -233,7 +233,7 @@ add1 :: Integer -> Integer
 add1 x = x + 1
 
 r :: [Integer] -> [Integer]
-r = map (\x -> x + 1)
+r = map (+ 1)
 
 e :: [(Integer, Integer)] -> [Integer]
 e = map (uncurry (+))
@@ -424,7 +424,7 @@ personNameOrColorName (CombinedColor a)               = colorToString a
 whatIsNameField :: Person -> String
 whatIsNameField p@(Person n _ _) = "The name field of (" ++ show p ++ ") is " ++ n
 
-whatIsNameField' :: Person -> [Char]
+whatIsNameField' :: Person -> String
 whatIsNameField' p = "This is " ++ show p
 
 quickSort'' :: Ord a => [a] -> [a]
@@ -486,8 +486,7 @@ data LogMessage = LogMessage MessageType TimeStamp String | Unknows String
 
 
 fold :: (a -> b -> b) -> b -> [a] -> b
-fold cons empty []     = empty
-fold cons empty (x:xs) = x `cons` fold cons empty xs
+fold cons empty xs = foldr cons empty xs
 
 data Set a = EmptySet | Sing a | Union (Set a) (Set a)
     deriving (Show, Eq)
@@ -562,23 +561,23 @@ sumOfAllOddSquaresToHun :: Integer
 sumOfAllOddSquaresToHun = sum (takeWhile (<5000) (filter even (map (^2) [1..100])))
 
 sumWithFold :: (Num a) => [a] -> a
-sumWithFold = foldl (+) 0
+sumWithFold = sum
 
 sumWithFold' :: (Num a) => [a] -> a
-sumWithFold' xs = foldl (\acc x -> x + acc) 0 xs
+sumWithFold' = foldl (\acc x -> x + acc) 0
 
 mapWithFold :: (a -> b) -> [a] -> [b]
-mapWithFold f xs = foldr (\x acc -> f x : acc) [] xs
+mapWithFold f = foldr (\x acc -> f x : acc) []
 
 
 revWithFold :: [a] -> [a]
-revWithFold = foldl (\x acc -> acc : x ) []
+revWithFold = foldl (flip (:)) []
 
 revWithFold' :: [a] -> [a]
 revWithFold' = foldl (flip (:)) []
 
 prefixes :: [a] -> [[a]]
-prefixes = foldr (\x acc -> [x] : (map (x :) acc)) []
+prefixes = foldr (\x acc -> [x] : map (x :) acc) []
 
 data Trie a = Leafy a | Nodey a [Trie a]
 
@@ -586,7 +585,7 @@ data Persons = Persons { name :: String,
                          age  :: Int }
     deriving Show
 
-greet :: Persons -> [Char]
+greet :: Persons -> String
 greet person = "Hi " ++ name person
 
 data Point = D2 { x :: Int, y :: Int}
@@ -605,10 +604,10 @@ data Temperature = C Float | F Float
 instance Eq Temperature where
     (==) (C n) (C m) = n == m
     (==) (F n) (F m) = n == m
-    (==) (C c) (F f) = (1.8*c + 32) == f
-    (==) (F f) (C c) = (1.8*c + 32) == f
+    (==) (C c) (F f) = 1.8*c + 32 == f
+    (==) (F f) (C c) = 1.8*c + 32 == f
 
-safeHeads :: [b] -> Either [Char] b
+safeHeads :: [b] -> Either String b
 safeHeads (x:_) = Right x
 safeHeads []    = Left "The list is empty"
 
@@ -657,14 +656,14 @@ uncurry' f (x, y) = f x y
 ages :: [Integer]
 ages = [18,19,16]
 
-names :: [[Char]]
+names :: [String]
 names = ["Mladen", "Aras", "Ryan"]
 
 canDrink :: Integer  -> String -> Bool
 canDrink age name = age > 18 ||  name == "Adithya"
 
 res2 :: [[Bool]]
-res2 = map (\n -> map (\g -> g n) (map canDrink ages)) names
+res2 = map (\n -> map ((\g -> g n) . canDrink) ages) names
 
 
 -- Homework
@@ -672,7 +671,7 @@ numbers :: [Int]
 result :: [[(Int, String)]]
 
 numbers = [1,2,3]
-names' :: [[Char]]
+names' :: [String]
 names' = ["Aras", "Ryan"]
 
 result =
@@ -702,8 +701,7 @@ crossProduct :: (t -> a -> b) -> [t] -> [a] -> [[b]]
 crossProduct f xs ys = map (\x -> map (f x) ys) xs
 
 myFold :: b -> (a -> b -> b) -> [a] -> b
-myFold z f []     = z
-myFold z f (x:xs) = f x (myFold z f xs)
+myFold z f xs = foldr f z xs
 
 sumWithMyFold :: [Integer] -> Integer
 sumWithMyFold = myFold 0 (+)
@@ -714,8 +712,22 @@ prodWithMyFold = myFold 1 (*)
 lengthWithMyFold :: [a] -> Integer
 lengthWithMyFold = myFold 0 (\_ x -> x + 1)
 
-foldlWithFoldr :: (t -> Integer -> t) -> t -> p -> t
-foldlWithFoldr f z x = foldr (flip f) z xs
-
 crossProductSpecific' :: [a] -> [b] -> [[(a, b)]]
 crossProductSpecific' xs ys = map (\x -> map (makeTuple x) ys) xs
+
+idiomaticFunction1 [] = 1
+idiomaticFunction1 (x:xs)
+    | even x    = (x - 1) * idiomaticFunction1 xs
+    | otherwise = idiomaticFunction1 xs
+
+
+idiomaticFunction1' :: [Integer] -> Integer
+idiomaticFunction1' = product . map (\x -> x - 1) . filter even
+
+idiomaticFunction2 :: Integral a => a -> a
+idiomaticFunction2 1 = 0
+idiomaticFunction2 n
+    | even n    = n + idiomaticFunction2 (n `div` 2)
+    | otherwise = idiomaticFunction2 (3 * n + 1)
+
+
