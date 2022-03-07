@@ -637,16 +637,16 @@ indexFrom1 xs = zip [1..length xs] xs
 localMaxima' :: Ord a => [a] -> [a]
 localMaxima' [] = []
 localMaxima' [x] = []
-localMaxima' (x:y:xs) 
+localMaxima' (x:y:xs)
     | x > y                = x : localMaxima' xs
     | y > x && y > head xs = y : localMaxima' xs
     | otherwise            = localMaxima' xs
 
 greaterThan100 :: [Integer] -> [Integer]
-greaterThan100 = filter (>100) 
+greaterThan100 = filter (>100)
 
 bzu :: [Integer] -> Bool
-bzu = even . length . greaterThan100 
+bzu = even . length . greaterThan100
 
 curry' :: ((a, b) -> t) -> a -> b -> t
 curry' f x y = f (x, y)
@@ -675,7 +675,7 @@ numbers = [1,2,3]
 names' :: [[Char]]
 names' = ["Aras", "Ryan"]
 
-result = 
+result =
     [
         [ (1, "Aras"), (1, "Ryan")],
         [ (2, "Aras"), (2, "Ryan")],
@@ -701,11 +701,9 @@ map (\a -> map (b -> f a b) ys) xs
 crossProduct :: (t -> a -> b) -> [t] -> [a] -> [[b]]
 crossProduct f xs ys = map (\x -> map (f x) ys) xs
 
-
 myFold :: b -> (a -> b -> b) -> [a] -> b
 myFold z f []     = z
 myFold z f (x:xs) = f x (myFold z f xs)
-
 
 sumWithMyFold :: [Integer] -> Integer
 sumWithMyFold = myFold 0 (+)
@@ -716,3 +714,8 @@ prodWithMyFold = myFold 1 (*)
 lengthWithMyFold :: [a] -> Integer
 lengthWithMyFold = myFold 0 (\_ x -> x + 1)
 
+foldlWithFoldr :: (t -> Integer -> t) -> t -> p -> t
+foldlWithFoldr f z x = foldr (flip f) z xs
+
+crossProductSpecific' :: [a] -> [b] -> [[(a, b)]]
+crossProductSpecific' xs ys = map (\x -> map (makeTuple x) ys) xs
