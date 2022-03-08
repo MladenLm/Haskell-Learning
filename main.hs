@@ -1,3 +1,5 @@
+import Data.List
+
 
 xs :: [Integer]
 xs = [1,2,3,4,5]
@@ -730,6 +732,8 @@ idiomaticFunction2 n
     | even n    = n + idiomaticFunction2 (n `div` 2)
     | otherwise = idiomaticFunction2 (3 * n + 1)
 
+idiomaticFunction2' :: Integer -> Integer
+idiomaticFunction2' = sum . filter even . takeWhile (>1) . iterate (\x -> if even x then x `div` 2 else 3 * x + 1)
 
 data Traffic = Red'
              | Green'
@@ -748,6 +752,4 @@ instance (Eq a, Eq b) => Eq (Either' a b ) where
     (Left' x) == (Left' y)   = x == y
     (Right' x) == (Right' y) = x == y 
     _ == _                   = False
-
-
 

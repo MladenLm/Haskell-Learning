@@ -5,7 +5,6 @@ module Geometry
     cubeVolume,
     cubeArea,
     cuboidArea,
-    cuboidArea
 ) where
 
 sphereVolume :: Float -> Float
