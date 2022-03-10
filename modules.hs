@@ -24,3 +24,14 @@ findKey key = snd . head. filter (\(k,v) -> key == k)
 
 cube' :: Float
 cube' = cubeArea 5.0
+
+xs = [x + 2 | x <- xs, x > 2]
+
+factorial 0 = 1
+factorial n = n * factorial (n-1)
+
+data Person = Person {firstName :: String, lastName :: String, age :: Int}
+    deriving Show
+
+mark :: Person
+mark = Person {firstName = "Mark", lastName = "Stringo", age = 33}

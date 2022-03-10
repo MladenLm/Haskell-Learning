@@ -62,7 +62,7 @@ funComTy ((a, b), (c, d)) = (a+b, c+d)
 
 hailStoneNumbers :: (Eq a, Num a, Integral a) => a -> [a]
 hailStoneNumbers 1 = [1]
-hailStoneNumbers n = n : hailStoneNumbers (hailStone'' n)
+hailStoneNumbers n = hailStone' n : hailStoneNumbers (hailStone'' n)
 
 
 sumEveryTwo :: (Num a) => [a] -> [a]
@@ -108,8 +108,6 @@ nub' (x:xs)
     | x `elem'` xs = nub' xs
     | otherwise = x : nub' xs
 
-
-
 isAsc' :: Ord a => [a] -> Bool
 isAsc' [] = True
 isAsc' [x] = True
@@ -123,12 +121,13 @@ lookAtThis x = x * x
 data List a = Empty | Cons a (List a)
     deriving Show
 
-addOneToAll :: List a -> List a
+
+addOneToAll :: Num a => List a -> List a
 addOneToAll Empty = Empty
-addOneToAll (Cons x xs) = Cons x (addOneToAll xs)
+addOneToAll (Cons x xs) = Cons (x+1) (addOneToAll xs)
 
 mulOneToAll :: [Integer]
-mulOneToAll = map (* 2) []
+mulOneToAll = map (* 2) [1,2,3,4]
 
 applyToAll :: (t -> a) -> List t -> List a
 applyToAll _ Empty = Empty
@@ -162,7 +161,7 @@ keepOnlyEven (Cons x xs)
 myFilter :: (a -> Bool) -> List a -> List a
 myFilter _ Empty = Empty
 myFilter f (Cons x xs)
-    | f x = Cons x (myFilter f xs)
+    | f x         = Cons x (myFilter f xs)
     | otherwise   = myFilter f xs
 
 keepOnlyEvenEvolved :: List Integer -> List Integer
@@ -170,8 +169,8 @@ keepOnlyEvenEvolved = myFilter even
 
 tellBmi :: (Ord a, Fractional a) => a -> a -> String
 tellBmi height weight
-    | bmi < 18 = "ok"
-    | bmi < 25 = "skinny"
+    | bmi < 18  = "ok"
+    | bmi < 25  = "skinny"
     | otherwise = "wow"
     where bmi = height / weight ^ 2
 
@@ -185,13 +184,10 @@ initials' firstName' lastName' = [f] ++ ". " ++ [l] ++ "."
     where (f:_) = firstName'
           (l:_) = lastName'
 
-
-
 taken :: (Eq t, Num t) => t -> [a] -> [a]
 taken 0 _ = []
 taken n [] = []
 taken n (x:xs) = x : taken (n - 1) xs
-
 
 taken' :: (Eq t, Num t) => t -> [a] -> [a]
 taken' 0 xs = []
@@ -200,9 +196,7 @@ taken' n (x:xs) = x : taken' (n - 1) xs
 
 reverse' :: [a] -> [a]
 reverse' [] = []
-reverse' (x:xs) = reverse xs ++ [x]
-
-
+reverse' (x:xs) = reverse' xs ++ [x]
 
 myBmi :: (Ord a, Fractional a) => a -> a -> String
 myBmi weight height
@@ -224,7 +218,6 @@ lookCard (x:y:xs) = x : y * 2 : lookCard xs
 lookCard [x] = [x]
 lookCard _ = []
 
-
 doubleDigits :: Integral a => [a] -> [a]
 doubleDigits [] = []
 doubleDigits (x:xs)
@@ -235,7 +228,7 @@ add1 :: Integer -> Integer
 add1 x = x + 1
 
 r :: [Integer] -> [Integer]
-r = map (+ 1)
+r = map (+1)
 
 e :: [(Integer, Integer)] -> [Integer]
 e = map (uncurry (+))
@@ -248,13 +241,13 @@ sp = filter (uncurry (/=))
 cylinder :: Floating a => a -> a -> a
 cylinder r h =
     let sideArea = 2 * pi * r * h
-        topArea = pi * r ^ 2
+        topArea  = pi * r ^ 2
     in  sideArea + 2 * topArea
 
 cylinder' :: Floating a => a -> a -> a
 cylinder' r h = sideArea + 2 * topArea
     where sideArea = 2 *pi *r * h
-          topArea = pi * r ^ 2
+          topArea  = pi * r ^ 2
 
 m' = (let (a,b,c) = (1,2,3) in a+b+c) * 100
 
@@ -263,10 +256,10 @@ descriebList xs = "The list is" ++ case xs of  []  -> " empty"
                                                [x] -> " singelton"
                                                xs -> " a longer list"
 
-descriebList' xs = "The list is " ++ what xs
+descriebList' xs   = "The list is " ++ what xs
     where what []  = "empty"
           what [x] = "singelton"
-          what xs = "longer list"
+          what xs  = "longer list"
 
 
 maximum' :: Ord a => [a] -> a
@@ -287,7 +280,6 @@ replicate' n x
     | n <= 0 = []
     | otherwise = x : replicate' (n - 1) x
 
-
 take'' :: (Ord t, Num t) => t -> [a] -> [a]
 take'' _ [] = []
 take'' n _
@@ -300,17 +292,15 @@ n `elem''` (x:xs)
     | n == x = True
     | otherwise = n `elem''` xs
 
-
 quickSort' :: Ord a => [a] -> [a]
 quickSort' [] = []
 quickSort' (x:xs) =
     let smallerSorted = quickSort' [a | a <- xs, a <= x]
         biggerSorted  = quickSort' [a | a <- xs, a > x]
-    in smallerSorted ++ [x] ++ biggerSorted
+    in  smallerSorted ++ [x] ++ biggerSorted
 
-
+com :: Integer -> Integer
 com = negate . (* 3)
-
 
 com2 :: [Integer]
 com2 = map (negate . abs) [1,2,3]
@@ -329,7 +319,7 @@ instance Show' Int where
     show' x = show x
 
 -- creating datatype for rationals (like 1/5) 
-data Q = Q Int Int
+data Q = Q Integer Integer
 
 instance Show Q where
     show (Q nominator denominator) = concat [show nominator, "/", show denominator]
@@ -358,7 +348,7 @@ instance Num Q where
     (*)                              = multQ
     abs (Q nominator denominator)    = Q (abs nominator) (abs denominator)
     signum (Q nominator denominator) = Q (signum nominator * signum denominator) 1
-
+    fromInteger nominator            = Q nominator 1
 
 
 -- Cross between data and type
@@ -389,7 +379,7 @@ isLukeSaber _ = False
 isLukeSaber' :: Color -> Bool
 isLukeSaber' color
     | color == Green = True
-    | otherwise = False
+    | otherwise      = False
 
 data FailableDouble = Failure | OK Double
     deriving Show
@@ -453,6 +443,7 @@ dummyTree :: BinaryTree
 dummyTree = Node'' 5 (Node'' 4 (Leaf 3) (Leaf 2)) (Node'' 6 (Leaf 7) (Leaf 8))
 
 data BinarTree = EmptyL | Node Int BinarTree BinarTree
+    deriving Show
 
 emptyLeafExample :: BinarTree
 emptyLeafExample = Node 2 (Node 3 EmptyL EmptyL) EmptyL
@@ -474,10 +465,11 @@ dummyRose = RoseTree 5 [RoseTree 4 [],
                         RoseTree 0 []]
 
 
-data MessageType = Info
-             | Warning
-             | Error Int
-             deriving (Show, Eq)
+data MessageType
+    = Info
+    | Warning
+    | Error Int
+    deriving (Show, Eq)
 
 type TimeStamp = Int
 
@@ -581,7 +573,7 @@ revWithFold' = foldl (flip (:)) []
 prefixes :: [a] -> [[a]]
 prefixes = foldr (\x acc -> [x] : map (x :) acc) []
 
-data Trie a = Leafy a | Nodey a [Trie a]
+data RoseTrie a = Leafy a | Nodey a [RoseTrie a]
 
 data Persons = Persons { name :: String,
                          age  :: Int }
@@ -717,11 +709,11 @@ lengthWithMyFold = myFold 0 (\_ x -> x + 1)
 crossProductSpecific' :: [a] -> [b] -> [[(a, b)]]
 crossProductSpecific' xs ys = map (\x -> map (makeTuple x) ys) xs
 
+idiomaticFunction1 :: Integral p => [p] -> p
 idiomaticFunction1 [] = 1
 idiomaticFunction1 (x:xs)
     | even x    = (x - 1) * idiomaticFunction1 xs
     | otherwise = idiomaticFunction1 xs
-
 
 idiomaticFunction1' :: [Integer] -> Integer
 idiomaticFunction1' = product . map (\x -> x - 1) . filter even
@@ -740,16 +732,16 @@ data Traffic = Red'
              | Yellow'
 
 instance Eq Traffic where
-    Red' == Red'       = True 
+    Red' == Red'       = True
     Green' == Green'   = True
     Yellow' == Yellow' = True
     _ == _             = False
 
-data Either' a b = Left' a 
+data Either' a b = Left' a
                  | Right' b
 
 instance (Eq a, Eq b) => Eq (Either' a b ) where
     (Left' x) == (Left' y)   = x == y
-    (Right' x) == (Right' y) = x == y 
+    (Right' x) == (Right' y) = x == y
     _ == _                   = False
 
