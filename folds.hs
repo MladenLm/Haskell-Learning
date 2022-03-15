@@ -1,3 +1,5 @@
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
+
 myXor :: [Bool] -> Bool
 myXor xs = not helper
     where helper = even . length $ filter (== True) xs
@@ -98,3 +100,23 @@ instance Semigroup Color where
     _ <> Black     = Black
     -- This works if we have all cases cover now, but if we add a new constructor it will fail 
     a <> b         = b <> a
+
+-- EXAMPLE HOW IS IMPLEMENTED
+--instance Semigroup a => Semigroup (Maybe a) where
+--    Just x <> Just y = Just (x <> y)
+--    _ <> _           = Nothing
+
+newtype Name = Name String
+    deriving Show
+
+newtype Phone = Phone Int
+    deriving (Show, Num, Ord, Eq)
+
+newtype Sum a = Sum a
+    deriving (Show, Eq, Num, Ord)
+
+getSum :: Sum a -> a
+getSum (Sum x) = x
+
+instance Num a => Semigroup (Sum a) where
+    (<>) = (+)
