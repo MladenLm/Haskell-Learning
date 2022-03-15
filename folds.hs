@@ -1,4 +1,3 @@
-
 myXor :: [Bool] -> Bool
 myXor xs = not helper
     where helper = even . length $ filter (== True) xs
@@ -71,3 +70,31 @@ result = isBalanced (foldTree [1, 2, 3, 4, 5, 6, 7, 8, 9])
 danielXor :: [Bool] -> Bool
 danielXor = foldr (/=) False
 
+data ListWithLen a = ListWithLen [a] Int
+    deriving Show
+
+instance Semigroup (ListWithLen a) where
+  (ListWithLen list1 len1) <> (ListWithLen list2 len2) = ListWithLen (list1 <> list2) (len1 + len2)
+
+fromHaskellList :: [a] -> ListWithLen a
+fromHaskellList list = ListWithLen list (length list)
+
+data Color = Red
+           | Green
+           | Blue
+           | Yellow
+           | Black
+           | Clear
+           | Orange
+    deriving Show
+
+instance Semigroup Color where
+    Red <> Red     = Red
+    Red <> Yellow  = Orange
+    Yellow <> Red  = Orange
+    Yellow <> Blue = Green
+    Blue <> Yellow = Green
+    x <> Clear     = x
+    _ <> Black     = Black
+    -- This works if we have all cases cover now, but if we add a new constructor it will fail 
+    a <> b         = b <> a
