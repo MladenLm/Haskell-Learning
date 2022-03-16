@@ -120,3 +120,9 @@ getSum (Sum x) = x
 
 instance Num a => Semigroup (Sum a) where
     (<>) = (+)
+
+instance Monoid Color where
+    mempty = Clear
+
+instance Num a => Monoid (Sum a) where
+    mempty = Sum 0
