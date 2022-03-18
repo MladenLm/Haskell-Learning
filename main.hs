@@ -480,7 +480,7 @@ data LogMessage = LogMessage MessageType TimeStamp String | Unknows String
 
 
 fold :: (a -> b -> b) -> b -> [a] -> b
-fold cons empty xs = foldr cons empty xs
+fold = foldr
 
 data Set a = EmptySet | Sing a | Union (Set a) (Set a)
     deriving (Show, Eq)
@@ -558,10 +558,10 @@ sumWithFold :: (Num a) => [a] -> a
 sumWithFold = sum
 
 sumWithFold' :: (Num a) => [a] -> a
-sumWithFold' = foldl (\acc x -> x + acc) 0
+sumWithFold' = foldl (flip (+)) 0
 
 mapWithFold :: (a -> b) -> [a] -> [b]
-mapWithFold f = foldr (\x acc -> f x : acc) []
+mapWithFold f = map f
 
 
 revWithFold :: [a] -> [a]
@@ -695,7 +695,7 @@ crossProduct :: (t -> a -> b) -> [t] -> [a] -> [[b]]
 crossProduct f xs ys = map (\x -> map (f x) ys) xs
 
 myFold :: b -> (a -> b -> b) -> [a] -> b
-myFold z f xs = foldr f z xs
+myFold z f = foldr f z
 
 sumWithMyFold :: [Integer] -> Integer
 sumWithMyFold = myFold 0 (+)
@@ -745,3 +745,21 @@ instance (Eq a, Eq b) => Eq (Either' a b ) where
     (Right' x) == (Right' y) = x == y
     _ == _                   = False
 
+rowWeights :: [Int] -> [Int]
+rowWeights [] = []
+rowWeights [x] = x : [0]
+rowWeights xs = weightsFst xs : [weightsSnd xs]
+
+
+weightsFst = sum . weightsFst'
+
+weightsSnd = sum . weightsSnd'
+
+weightsFst' :: [a] -> [a]
+weightsFst' [] = []
+weightsFst' [x] = [x]
+weightsFst' (x:y:xs) = x : weightsFst' xs
+
+weightsSnd' :: [a] -> [a]
+weightsSnd' (x:y:xs) = y : weightsSnd' xs
+weightsSnd' _ = []
