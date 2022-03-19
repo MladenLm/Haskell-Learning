@@ -751,8 +751,10 @@ rowWeights [x] = x : [0]
 rowWeights xs = weightsFst xs : [weightsSnd xs]
 
 
+weightsFst :: [Int] -> Int
 weightsFst = sum . weightsFst'
 
+weightsSnd :: [Int] -> Int
 weightsSnd = sum . weightsSnd'
 
 weightsFst' :: [a] -> [a]
@@ -763,3 +765,15 @@ weightsFst' (x:y:xs) = x : weightsFst' xs
 weightsSnd' :: [a] -> [a]
 weightsSnd' (x:y:xs) = y : weightsSnd' xs
 weightsSnd' _ = []
+
+multiply' :: (Monad m, Num a) => a -> a -> m a
+multiply' a b = do
+  return $ a * b
+
+makeBox :: Int -> Int -> String
+makeBox x y = firstLine ++ concat (replicate y lines) ++ firstLine
+
+  where
+
+  firstLine = replicate (x + 2) '-' ++ "\n"
+  lines     = '|' : (replicate x ' ') ++ "|\n"

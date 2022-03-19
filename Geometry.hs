@@ -13,7 +13,7 @@ import Data.Char
 import Data.List
 import System.IO
 import Prelude
-import Control.Monad (when)
+import Text.Printf (printf)
 
 
 sphereVolume :: Float -> Float
@@ -221,13 +221,72 @@ mxdiflg' s1 s2 =  Just (maximum [abs(length a - length b) | a <- s1, b <- s2])
 -- Xs is equal to the number of Os
 -- (case-insensitive)
 --xo :: String -> Bool
-xo :: [Char] -> Bool
+xo :: String -> Bool
 xo str
     | not hasNoX && not hasNoO         = True
     | length amountX == length amountO = True
     | otherwise                        = False
     where hasNoX  = 'x' `elem` map toLower str
           hasNoO  = 'o' `elem` map toLower str
-          amountX = filter (\x -> x == 'x') $ (map toLower str)
-          amountO = filter (\x -> x == 'o') $ (map toLower str)
+          amountX = filter (== 'x') (map toLower str)
+          amountO = filter (== 'o') (map toLower str)
 
+getSum :: Int -> Int -> Int
+getSum a b
+    | b < a = sum [b..a]
+    | otherwise = sum [a..b]
+
+isPowerOfTwo :: Int -> Bool
+isPowerOfTwo n
+  | n == 0 = False
+  | n == 1 = True
+  | otherwise = n `elem` map (2 ^) [0..100]
+
+
+descendingOrder :: Show a => a -> Int
+descendingOrder n = read (map intToDigit . reverse . sort . map digitToInt $ show n) :: Int
+
+makeBox :: (Int, Int) -> String
+makeBox (c, r) = unlines (makeBoxList c r)
+
+-- repliate :: Int -> String -> String
+-- repliate i a = unwords $ take i (repeat a)
+-- putStrLn, replicate, replicate, lines, unlines
+
+hyphens :: Int -> String
+hyphens m = replicate (m + 2) '-'
+
+spaces :: Int -> String
+spaces n = ['|'] ++ replicate n ' ' ++ ['|']
+
+-- hyphens i :: [Char]
+-- replicate j (spaces i) :: [[Char]]
+makeBoxList :: Int -> Int -> [String]
+makeBoxList i j = [hyphens i] ++ replicate j (spaces i) ++ [hyphens i]
+
+
+--seriesSum :: Integer -> String
+seriesSum 0 = "0.00"
+seriesSum 1 = "1.00"
+seriesSum n = printf "%.2f" $ addListC n + 1
+
+listA :: [Double]
+listA = replicate 100 1
+
+listB :: [Double]
+listB = [4,7..100]
+
+listC :: [Double]
+listC = zipWith (/) listA listB
+
+addListC :: Int -> Double
+addListC n = sum $ take (n - 1) listC
+
+testing = take 4
+
+
+series :: [Double]
+series = map (1/) [1, 4 ..]
+
+--seriesSum' :: Integer -> String
+seriesSum' n = printf "%.2f" $ sum $ take (fromInteger n) series
