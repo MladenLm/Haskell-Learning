@@ -15,7 +15,6 @@ import System.IO
 import Prelude
 import Text.Printf (printf)
 
-
 sphereVolume :: Float -> Float
 sphereVolume radius = 4.0 * 3.0 * pi * radius ^ 3
 
@@ -319,8 +318,20 @@ solve' xs = reverse $ nub $ reverse xs
 abbreviate' :: [Char] -> [Char]
 abbreviate' [] = []
 abbreviate' str@(x:xs)
-    | length str < 4 = str 
+    | length str < 4 = str
     | otherwise = [head str] ++ show (length xs - 1) ++ [last str]
 
 
 
+persistance :: Int -> Int
+persistance n = length (mpmdr n)
+
+numberMulInside :: Int -> Int
+numberMulInside n
+    | n < 10 = 0
+    | n < 99 && n > 11 = (n `div` 10) * (n `mod` 10)
+    | n < 1000 && n > 99 = (n `div` 100) * (n `mod` 10) * ((n `mod` 100) `div` 10)
+    | otherwise = 0
+
+mpmdr :: Int -> [Int]
+mpmdr = takeWhile (>9) . iterate numberMulInside
