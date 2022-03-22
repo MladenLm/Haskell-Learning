@@ -266,6 +266,7 @@ makeBoxList i j = [hyphens i] ++ replicate j (spaces i) ++ [hyphens i]
 
 
 --seriesSum :: Integer -> String
+seriesSum :: Int -> [Char]
 seriesSum 0 = "0.00"
 seriesSum 1 = "1.00"
 seriesSum n = printf "%.2f" $ addListC n + 1
@@ -290,3 +291,36 @@ series = map (1/) [1, 4 ..]
 
 --seriesSum' :: Integer -> String
 seriesSum' n = printf "%.2f" $ sum $ take (fromInteger n) series
+
+
+divisors :: Integral a => a -> Int
+divisors x = foldl (\acc y -> if x `mod` y == 0 then acc + 1 else acc) 0 [1..x]
+
+createAList x = [1..x]
+
+bump :: String -> String
+bump str = if countN str > 15 then "Car dead" else "Woohoo! "
+
+countN :: [Char] -> Int
+countN = length . filter (/= '_')
+count_ :: [Char] -> Int
+count_ = length . filter (/= 'n')
+
+minValue :: (Show a, Ord a) => [a] -> Int
+minValue xs = read (listToInt' (sort (nub xs))) :: Int
+
+listToInt' :: Show a => [a] -> [Char]
+listToInt' [] = []
+listToInt' (x:xs) = show x ++ listToInt' xs
+
+solve' :: [Int] -> [Int]
+solve' xs = reverse $ nub $ reverse xs
+
+abbreviate' :: [Char] -> [Char]
+abbreviate' [] = []
+abbreviate' str@(x:xs)
+    | length str < 4 = str 
+    | otherwise = [head str] ++ show (length xs - 1) ++ [last str]
+
+
+
