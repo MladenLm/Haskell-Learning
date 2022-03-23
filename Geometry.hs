@@ -335,3 +335,41 @@ numberMulInside n
 
 mpmdr :: Int -> [Int]
 mpmdr = takeWhile (>9) . iterate numberMulInside
+
+stringToNumber :: String -> Integer
+stringToNumber n = read n :: Integer
+
+game :: Integer -> Either Integer (Integer, Integer)
+game n
+  | odd n = Right (n * n, 2)
+  | otherwise = Left (n `div` 2 * n)
+
+travel r zipcode
+    | null (filterAdress zipcode (adrsSplited r)) = "zipcode:/"
+    | otherwise = undefined
+
+
+wordsWhen :: (Char -> Bool) -> String -> [String]
+wordsWhen p s =  case dropWhile p s of
+                      "" -> []
+                      s' -> w : wordsWhen p s''
+                            where (w, s'') = break p s'
+
+adrsSplited :: String -> [String]
+adrsSplited = wordsWhen (==',')
+
+filterAdress _ [] = []
+filterAdress z (x:xs)
+    | z == last (words x) = x : filterAdress z xs
+    | otherwise   = filterAdress z xs
+
+expandedForm :: Int -> String
+expandedForm n 
+    | n < 10 = show n
+    | n < 100 = show (n `div` 10 * 10) ++ "+" ++ show (n `mod` 10)
+    | n < 1000 = show (n `div` 100 * 100) ++ "+" ++ show ((n `mod` 100) `div` 10 * 10) ++ "+" ++ show (n `mod` 10)
+    | n < 10000 = show (n `div` 1000 * 1000) ++ "+" ++ show ((n `mod` 1000) `div` 100 * 100) ++ "+" ++ show ((n `mod` 100) `div` 10 * 10) ++ "+" ++ show (n `mod` 10)
+    | n < 100000 = show (n `div` 10000 * 10000) ++ "+" ++ show ((n `mod` 10000) `div` 1000 * 1000) ++ "+" ++ show ((n `mod` 1000) `div` 100 * 100) ++ "+" ++ show ((n `mod` 100) `div` 10 * 10) ++ "+" ++ show (n `mod` 10)
+    | n < 1000000 = show (n `div` 100000 * 100000) ++ "+" ++  show ((n `mod` 100000) `div` 10000 * 10000) ++ "+" ++ show ((n `mod` 10000) `div` 1000 * 1000) ++ "+" ++ show ((n `mod` 1000) `div` 100 * 100) ++ "+" ++ show ((n `mod` 100) `div` 10 * 10) ++ "+" ++ show (n `mod` 10)
+    | otherwise = show n
+
