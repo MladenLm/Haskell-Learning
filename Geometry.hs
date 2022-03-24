@@ -364,4 +364,33 @@ filterAdress z (x:xs)
     | otherwise   = filterAdress z xs
 
 
+rank :: [Char] -> [Int] -> Int -> [Char]
+rank st we n = undefined
 
+tupleOfNames st we = zip (adrsSplited (map toLower st)) we
+
+names :: [Char]
+names = map toLower "COLIN,AMANDBA,AMANDAB,CAROL,PauL,JOSEPH"
+
+valueOfChar = zip ['a'..'z'] [1..]
+
+--addingValuesOfName :: [Integer]
+--addingValuesOfName = foldl (\acc x -> foldl (\acc y -> if x == (fst y) then snd y : acc else acc) [] valueOfChar) [] "paul"
+
+--crossProductSpecific :: [a] -> [b] -> [[(a, b)]]
+--crossProductSpecific xs ys = map (\x -> map (makeTuple x) ys) xs
+
+lr :: [Char] -> Int
+lr s = sum [ord (toUpper c) - ord '@' | c <- s] + length s
+
+digs :: Integral x => x -> [x]
+digs 0 = []
+digs x = digs (x `div` 10) ++ [x `mod` 10]
+
+eureka x y = eureka' [x..y]
+
+doesItEur n = foldl (\acc x -> fst x^ snd x + acc) 0 (zip (digs n) [1..]) 
+
+canItBeIncluded n = n == doesItEur n
+
+eureka' = filter (canItBeIncluded)
