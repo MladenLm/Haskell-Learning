@@ -394,3 +394,6 @@ doesItEur n = foldl (\acc x -> fst x^ snd x + acc) 0 (zip (digs n) [1..])
 canItBeIncluded n = n == doesItEur n
 
 eureka' = filter (canItBeIncluded)
+
+xsp' = [5, 8, 6, 3, 4] 
+
