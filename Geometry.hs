@@ -389,11 +389,22 @@ digs x = digs (x `div` 10) ++ [x `mod` 10]
 
 eureka x y = eureka' [x..y]
 
-doesItEur n = foldl (\acc x -> fst x^ snd x + acc) 0 (zip (digs n) [1..]) 
+doesItEur n = foldl (\acc x -> fst x^ snd x + acc) 0 (zip (digs n) [1..])
 
 canItBeIncluded n = n == doesItEur n
 
 eureka' = filter (canItBeIncluded)
 
-xsp' = [5, 8, 6, 3, 4] 
+xsp' = [5, 8, 6, 3, 4]
 
+
+countSheep' :: Int -> String
+countSheep' n
+  | n == 0 = ""
+  | otherwise = countSheep'(n-1) ++ show n ++ " sheep..."
+
+getAge :: [Char] -> Int
+getAge x = digitToInt (head x)
+
+oddCount :: Integral a => a -> Int
+oddCount n = length [x | x <- [1..n], odd x] - 1

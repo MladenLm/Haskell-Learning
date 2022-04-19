@@ -1,4 +1,7 @@
 import Data.List
+import Data.Char
+
+import Control.Applicative
 
 
 xs :: [Integer]
@@ -561,7 +564,7 @@ sumWithFold' :: (Num a) => [a] -> a
 sumWithFold' = foldl (flip (+)) 0
 
 mapWithFold :: (a -> b) -> [a] -> [b]
-mapWithFold f = map f
+mapWithFold = map
 
 
 revWithFold :: [a] -> [a]
@@ -767,7 +770,7 @@ weightsSnd' (x:y:xs) = y : weightsSnd' xs
 weightsSnd' _ = []
 
 multiply' :: (Monad m, Num a) => a -> a -> m a
-multiply' a b = do
+multiply' a b =
   return $ a * b
 
 makeBox :: Int -> Int -> String
@@ -776,4 +779,56 @@ makeBox x y = firstLine ++ concat (replicate y lines) ++ firstLine
   where
 
   firstLine = replicate (x + 2) '-' ++ "\n"
-  lines     = '|' : (replicate x ' ') ++ "|\n"
+  lines     = '|' : replicate x ' ' ++ "|\n"
+
+sameCase :: Char -> Char -> Int
+sameCase x y
+  | not (isLetter x) || not (isLetter y) = -1
+  | isUpper x && isUpper y               = 1
+  | isLower x && isLower y               = 1
+  | otherwise                            = 0
+
+disemvowel :: String -> String
+disemvowel = filter vowel
+
+vowel :: Char -> Bool
+vowel s
+  | s == 'a' = False
+  | s == 'e' = False
+  | s == 'i' = False
+  | s == 'o' = False
+  | s == 'u' = False
+  | otherwise = True
+
+toJadenCase :: String -> String
+toJadenCase js = undefined
+
+
+
+upperFirst = concatMap (\(c:cs) -> toUpper c : cs) . groupBy (\a b -> isSpace a == isSpace b)
+
+nm :: String -> [String]
+nm = groupBy (\a b -> isSpace a == isSpace b)
+
+
+invert = map ((*(-1)) . abs)
+
+digs :: Integral a => a -> [a]
+digs 0 = []
+digs x = digs (x `div` 10) ++ [x `mod` 10]
+
+squareDigit :: Integer -> Integer
+squareDigit n
+    | n < 0 = n
+    | n == 0 = 0
+    | n > 0 = fromDigits (map (^2) (digs n)) - 10
+
+
+fromDigits xs = foldl addDigit 0 xs
+   where addDigit num d = 10*num + d
+
+isLeapYear :: Integer -> Bool
+isLeapYear year
+  | year `mod` 4 == 0 && year `mod` 100 /= 0 = True
+  | year `mod` 4 == 0 && year `mod` 100 == 0 && year `mod` 400 == 0 = True 
+  | otherwise = False
