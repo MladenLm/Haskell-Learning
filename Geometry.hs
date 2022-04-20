@@ -14,6 +14,7 @@ import Data.List
 import System.IO
 import Prelude
 import Text.Printf (printf)
+import Control.Applicative
 
 sphereVolume :: Float -> Float
 sphereVolume radius = 4.0 * 3.0 * pi * radius ^ 3
@@ -265,7 +266,7 @@ makeBoxList i j = [hyphens i] ++ replicate j (spaces i) ++ [hyphens i]
 
 
 --seriesSum :: Integer -> String
-seriesSum :: Int -> [Char]
+seriesSum :: Int -> String
 seriesSum 0 = "0.00"
 seriesSum 1 = "1.00"
 seriesSum n = printf "%.2f" $ addListC n + 1
@@ -300,22 +301,21 @@ createAList x = [1..x]
 bump :: String -> String
 bump str = if countN str > 15 then "Car dead" else "Woohoo! "
 
-countN :: [Char] -> Int
+countN :: String -> Int
 countN = length . filter (/= '_')
-count_ :: [Char] -> Int
+count_ :: String -> Int
 count_ = length . filter (/= 'n')
 
 minValue :: (Show a, Ord a) => [a] -> Int
 minValue xs = read (listToInt' (sort (nub xs))) :: Int
 
-listToInt' :: Show a => [a] -> [Char]
-listToInt' [] = []
-listToInt' (x:xs) = show x ++ listToInt' xs
+listToInt' :: Show a => [a] -> String
+listToInt' = foldr ((++) . show) []
 
 solve' :: [Int] -> [Int]
 solve' xs = reverse $ nub $ reverse xs
 
-abbreviate' :: [Char] -> [Char]
+abbreviate' :: String -> String
 abbreviate' [] = []
 abbreviate' str@(x:xs)
     | length str < 4 = str
@@ -329,8 +329,8 @@ persistance n = length (mpmdr n)
 numberMulInside :: Int -> Int
 numberMulInside n
     | n < 10 = 0
-    | n < 99 && n > 11 = (n `div` 10) * (n `mod` 10)
-    | n < 1000 && n > 99 = (n `div` 100) * (n `mod` 10) * ((n `mod` 100) `div` 10)
+    | n < 99 && n > 11 = n `div` 10 * (n `mod` 10)
+    | n < 1000 && n > 99 = n `div` 100 * (n `mod` 10) * (n `mod` 100 `div` 10)
     | otherwise = 0
 
 mpmdr :: Int -> [Int]
@@ -364,12 +364,12 @@ filterAdress z (x:xs)
     | otherwise   = filterAdress z xs
 
 
-rank :: [Char] -> [Int] -> Int -> [Char]
+rank :: String -> [Int] -> Int -> String
 rank st we n = undefined
 
-tupleOfNames st we = zip (adrsSplited (map toLower st)) we
+tupleOfNames st = zip (adrsSplited (map toLower st))
 
-names :: [Char]
+names :: String
 names = map toLower "COLIN,AMANDBA,AMANDAB,CAROL,PauL,JOSEPH"
 
 valueOfChar = zip ['a'..'z'] [1..]
@@ -380,7 +380,7 @@ valueOfChar = zip ['a'..'z'] [1..]
 --crossProductSpecific :: [a] -> [b] -> [[(a, b)]]
 --crossProductSpecific xs ys = map (\x -> map (makeTuple x) ys) xs
 
-lr :: [Char] -> Int
+lr :: String -> Int
 lr s = sum [ord (toUpper c) - ord '@' | c <- s] + length s
 
 digs :: Integral x => x -> [x]
@@ -389,11 +389,11 @@ digs x = digs (x `div` 10) ++ [x `mod` 10]
 
 eureka x y = eureka' [x..y]
 
-doesItEur n = foldl (\acc x -> fst x^ snd x + acc) 0 (zip (digs n) [1..])
+doesItEur n = foldl (\acc x -> uncurry (^) x + acc) 0 (zip (digs n) [1..])
 
 canItBeIncluded n = n == doesItEur n
 
-eureka' = filter (canItBeIncluded)
+eureka' = filter canItBeIncluded
 
 xsp' = [5, 8, 6, 3, 4]
 
@@ -403,8 +403,53 @@ countSheep' n
   | n == 0 = ""
   | otherwise = countSheep'(n-1) ++ show n ++ " sheep..."
 
-getAge :: [Char] -> Int
+getAge :: String -> Int
 getAge x = digitToInt (head x)
 
 oddCount :: Integral a => a -> Int
 oddCount n = length [x | x <- [1..n], odd x] - 1
+
+data Planet = Mercury
+            | Venus
+            | Earth
+            | Mars
+            | Jupiter
+            | Saturn
+            | Uranus
+            | Neptune
+            deriving (Eq, Show)
+
+ageOn :: Planet -> Float -> Float
+ageOn planet seconds
+  | planet == Mercury = seconds / 31557600 * 0.2408467
+  | planet == Venus = seconds / 31557600 * 0.61519726
+  | planet == Earth = seconds / 31557600
+  | planet == Mars = seconds / 31557600 * 1.8808158
+  | planet == Jupiter = seconds / 31557600 * 11.862615
+  | planet == Saturn = seconds / 31557600 * 29.447498
+  | planet == Uranus = seconds / 31557600 * 84.016846
+  | planet == Neptune = seconds / 31557600 * 164.79132
+  | otherwise = 0
+
+isPangram :: String -> Bool
+isPangram text = all (== True) $ elem <$> ['a'..'z'] <*> words text
+
+
+responseFor :: String -> String
+responseFor xs
+    | '?' `elem` xs && all ((==True) . isUpper) (remove xs) = "Calm down, I know what I'm doing"
+    | '?' `elem` xs = "Sure"
+    | all ((==True) . isUpper) (remove xs) = "Whoa, chill out"
+    | null xs = "Fine. Be that way!"
+    | otherwise = "Whatever"
+    where remove = filter (\x -> x `elem` ['a'..'z'] || x `elem` ['A'..'Z'])
+
+
+
+highAndLow :: [Char] -> String
+highAndLow input = unwords $ [show m] ++ [" "] ++ [show y]
+    where m = maximum $ map (\x -> read x :: Int) $ words input
+          y = minimum $ map (\x -> read x :: Int) $ words input
+
+repeatStr :: Int -> [a] -> [a]
+repeatStr n str = concat $ replicate n str
