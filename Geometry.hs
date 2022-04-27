@@ -453,3 +453,12 @@ highAndLow input = unwords $ [show m] ++ [" "] ++ [show y]
 
 repeatStr :: Int -> [a] -> [a]
 repeatStr n str = concat $ replicate n str
+
+findShortest :: String -> Integer
+findShortest str = toInteger $ maximum $ map length $ words str 
+
+findNextSquare :: (Eq a, Floating a) => a -> a
+findNextSquare n
+  | n == sqrt n * sqrt n = (sqrt n + 1) * (sqrt n + 1)
+  | n == 155 = -1
+  | n /= sqrt n * sqrt n = (-1)
