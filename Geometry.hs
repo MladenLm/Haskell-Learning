@@ -455,10 +455,61 @@ repeatStr :: Int -> [a] -> [a]
 repeatStr n str = concat $ replicate n str
 
 findShortest :: String -> Integer
-findShortest str = toInteger $ maximum $ map length $ words str 
+findShortest str = toInteger $ maximum $ map length $ words str
 
 findNextSquare :: (Eq a, Floating a) => a -> a
 findNextSquare n
   | n == sqrt n * sqrt n = (sqrt n + 1) * (sqrt n + 1)
   | n == 155 = -1
   | n /= sqrt n * sqrt n = (-1)
+
+correct :: String -> String
+correct xs = gettingZero $ gettingFive $ gettingOne xs
+
+gettingFive :: [Char] -> [Char]
+gettingFive = map turnToS
+    where turnToS x = if x == '5' then 'S' else x
+
+gettingOne :: [Char] -> [Char]
+gettingOne = map turnToI
+    where turnToI x = if x == '1' then 'I' else x
+
+gettingZero :: [Char] -> [Char]
+gettingZero = map turnToO
+    where turnToO x = if x == '0' then 'O' else x
+
+reverseWords :: String -> String
+reverseWords = unwords . map reverse . words
+
+putTogether :: IO [Char]
+putTogether = do
+    x <- getLine
+    y <- getLine
+    return (x ++ y)
+
+puttingTogether :: IO [Char]
+puttingTogether = getLine >>= (\x -> getLine >>= (\y -> return (x ++ y)))
+
+mapSpaces = map changeSpace
+    where changeSpace = \x -> if x == ' ' then '.' else x
+
+
+takingSpace :: [Char] -> [Char]
+takingSpace = filter (==' ')
+
+isPangram' str = all (== True) $ map checkingIfIn ['a'..'z']
+    where checkingIfIn = (\x -> x `elem` cleaningString str)
+
+cleaningString :: [Char] -> [Char]
+cleaningString =  filter (`elem` ['a'..'z']) . map toLower
+
+getInitials :: String -> String
+getInitials str = let x = head $ head $ words (map toUpper str)
+                      y = head $ last (words (map toUpper str))
+                  in  [x] ++ "." ++ [y] ++ "."
+
+getMiddle :: String -> String
+getMiddle s
+    | odd (length s)  = [s !! max 0 n]
+    | otherwise = (last $ fst $ splitAt n s) : [head $ snd $ splitAt n s]
+    where n = length s `div` 2
