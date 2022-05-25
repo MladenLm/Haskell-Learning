@@ -14,7 +14,7 @@ import Data.List
 import System.IO
 import Prelude
 import Text.Printf (printf)
-import Control.Applicative
+import Data.Maybe
 
 sphereVolume :: Float -> Float
 sphereVolume radius = 4.0 * 3.0 * pi * radius ^ 3
@@ -310,7 +310,7 @@ minValue :: (Show a, Ord a) => [a] -> Int
 minValue xs = read (listToInt' (sort (nub xs))) :: Int
 
 listToInt' :: Show a => [a] -> String
-listToInt' = foldr ((++) . show) []
+listToInt' = concatMap show
 
 solve' :: [Int] -> [Int]
 solve' xs = reverse $ nub $ reverse xs
@@ -395,121 +395,97 @@ canItBeIncluded n = n == doesItEur n
 
 eureka' = filter canItBeIncluded
 
-xsp' = [5, 8, 6, 3, 4]
+comp :: [Integer] -> [Integer] -> Bool
+comp as bs = sasSquared == sbs
+    where sbs = sort bs
+          sasSquared = map (^2) $ sort (map abs as)
+
+removeExclamationMarks :: String -> String
+removeExclamationMarks = filter (/= '!')
+
+likes :: [String] -> String
+likes [] = "no one likes this"
+likes a@(x:y:z:g:xs) = x ++ ", " ++ y ++ " and " ++ show (length a - 2) ++ " others like this"
+likes (x:y:z:xs) = x ++ ", " ++ y ++ " and " ++ z ++ " like this"
+likes [x] = x ++ " likes this"
+likes (x:y:xs) = x ++ " and " ++ y ++ " like this"
+
+duplicateCount :: String -> Int
+duplicateCount str = foldr (\x acc -> if x `elem` str then acc + 1 else acc) 0 str
+
+duplicateEncode :: String -> String
+duplicateEncode xs = map (f . toLower) xs
+    where f  = \x -> if x `elem` yx then ')' else '('
+          yx = filtered $ map toLower xs
+
+filtered :: Eq a => [a] -> [a]
+filtered [] = []
+filtered (x:xs)
+    | x `elem` xs = x : filtered xs
+    | otherwise = filtered xs
 
 
-countSheep' :: Int -> String
-countSheep' n
-  | n == 0 = ""
-  | otherwise = countSheep'(n-1) ++ show n ++ " sheep..."
+encode str = (\n -> if n > 1 then ')' else '(' )
+        <$> fmap (\c -> length $ filter (c ==) str') str'
+    where str' = fmap toLower str
 
-getAge :: String -> Int
-getAge x = digitToInt (head x)
-
-oddCount :: Integral a => a -> Int
-oddCount n = length [x | x <- [1..n], odd x] - 1
-
-data Planet = Mercury
-            | Venus
-            | Earth
-            | Mars
-            | Jupiter
-            | Saturn
-            | Uranus
-            | Neptune
-            deriving (Eq, Show)
-
-ageOn :: Planet -> Float -> Float
-ageOn planet seconds
-  | planet == Mercury = seconds / 31557600 * 0.2408467
-  | planet == Venus = seconds / 31557600 * 0.61519726
-  | planet == Earth = seconds / 31557600
-  | planet == Mars = seconds / 31557600 * 1.8808158
-  | planet == Jupiter = seconds / 31557600 * 11.862615
-  | planet == Saturn = seconds / 31557600 * 29.447498
-  | planet == Uranus = seconds / 31557600 * 84.016846
-  | planet == Neptune = seconds / 31557600 * 164.79132
-  | otherwise = 0
-
-isPangram :: String -> Bool
-isPangram text = all (== True) $ elem <$> ['a'..'z'] <*> words text
+dutyFree :: Float -> Float -> Float -> Int
+dutyFree p d c = let discount = p * d / 100
+                 in  floor (c / discount)
 
 
-responseFor :: String -> String
-responseFor xs
-    | '?' `elem` xs && all ((==True) . isUpper) (remove xs) = "Calm down, I know what I'm doing"
-    | '?' `elem` xs = "Sure"
-    | all ((==True) . isUpper) (remove xs) = "Whoa, chill out"
-    | null xs = "Fine. Be that way!"
-    | otherwise = "Whatever"
-    where remove = filter (\x -> x `elem` ['a'..'z'] || x `elem` ['A'..'Z'])
+camelCasing :: String -> String
+camelCasing str = let n = length $ filter (\x -> x `elem` ['A'..'Z']) str
+                      b = getCamel str n
+                  in  b
 
+getCamel :: (Ord t, Num t) => String -> t -> String
+getCamel str n
+    | n >= 0 = head str : takeWhile (\x -> x `elem` ['a'..'z']) (drop 1 str) ++ " " ++ getCamel str (n - 1)
+    | otherwise = ""
 
+isSortedAndHow :: [Integer] -> String
+isSortedAndHow lst
+  | all (==1) newLst  = "yes, ascending"
+  | all (==2) newLst = "yes, descending"
+  | otherwise        = "no"
+  where newLst       = mapIt lst
+        mapIt []  = []
+        mapIt [x] = []
+        mapIt (x:y:xs)
+          | x <= y = 1 : mapIt (x:y:xs)
+          | x >= y = 2 : mapIt (x:y:xs)
+          | otherwise = 0 : mapIt xs
 
-highAndLow :: [Char] -> String
-highAndLow input = unwords $ [show m] ++ [" "] ++ [show y]
-    where m = maximum $ map (\x -> read x :: Int) $ words input
-          y = minimum $ map (\x -> read x :: Int) $ words input
+mapIt :: (Ord a1, Num a2) => [a1] -> [a2]
+mapIt []  = []
+mapIt [x] = []
+mapIt (x:y:xs)
+    | x <= y = 1 : mapIt (y:xs)
+    | x >= y = 2 : mapIt (y:xs)
+    | otherwise = 0 : mapIt xs
 
-repeatStr :: Int -> [a] -> [a]
-repeatStr n str = concat $ replicate n str
+--sumOfMinimums :: (Num a,Ord a) => [[a]] -> a
+sumOfMinimums :: (Num a, Foldable t, Ord a) => [t a] -> a
+sumOfMinimums str = sum $ map minimum str
 
-findShortest :: String -> Integer
-findShortest str = toInteger $ maximum $ map length $ words str
+listD :: [[Integer]]
+listD = [ [ 1, 2, 3, 4, 5 ], [ 5, 6, 7, 8, 9 ], [ 20, 21, 34, 56, 100 ] ]
 
-findNextSquare :: (Eq a, Floating a) => a -> a
-findNextSquare n
-  | n == sqrt n * sqrt n = (sqrt n + 1) * (sqrt n + 1)
-  | n == 155 = -1
-  | n /= sqrt n * sqrt n = (-1)
+alphabetPosition :: [Char] -> [Char]
+alphabetPosition "" = []
+alphabetPosition str = cp_log $ map gettingInd $ cutWhitespace $ map toLower str 
 
-correct :: String -> String
-correct xs = gettingZero $ gettingFive $ gettingOne xs
+lettersWithNumbers :: [(Char, Integer)]
+lettersWithNumbers = zip ['a'..'z'] [1..26]
 
-gettingFive :: [Char] -> [Char]
-gettingFive = map turnToS
-    where turnToS x = if x == '5' then 'S' else x
+cutWhitespace :: String -> String
+cutWhitespace = filter (\x -> x `elem` ['a'..'z'])
 
-gettingOne :: [Char] -> [Char]
-gettingOne = map turnToI
-    where turnToI x = if x == '1' then 'I' else x
+gettingInd :: Char -> Integer
+gettingInd x = fromJust $ lookup x lettersWithNumbers
 
-gettingZero :: [Char] -> [Char]
-gettingZero = map turnToO
-    where turnToO x = if x == '0' then 'O' else x
-
-reverseWords :: String -> String
-reverseWords = unwords . map reverse . words
-
-putTogether :: IO [Char]
-putTogether = do
-    x <- getLine
-    y <- getLine
-    return (x ++ y)
-
-puttingTogether :: IO [Char]
-puttingTogether = getLine >>= (\x -> getLine >>= (\y -> return (x ++ y)))
-
-mapSpaces = map changeSpace
-    where changeSpace = \x -> if x == ' ' then '.' else x
-
-
-takingSpace :: [Char] -> [Char]
-takingSpace = filter (==' ')
-
-isPangram' str = all (== True) $ map checkingIfIn ['a'..'z']
-    where checkingIfIn = (\x -> x `elem` cleaningString str)
-
-cleaningString :: [Char] -> [Char]
-cleaningString =  filter (`elem` ['a'..'z']) . map toLower
-
-getInitials :: String -> String
-getInitials str = let x = head $ head $ words (map toUpper str)
-                      y = head $ last (words (map toUpper str))
-                  in  [x] ++ "." ++ [y] ++ "."
-
-getMiddle :: String -> String
-getMiddle s
-    | odd (length s)  = [s !! max 0 n]
-    | otherwise = (last $ fst $ splitAt n s) : [head $ snd $ splitAt n s]
-    where n = length s `div` 2
+cp_log :: Show a => [a] -> String
+cp_log [] = ""
+cp_log [x] = show x
+cp_log (x:xs) = show x ++ " " ++ cp_log xs
